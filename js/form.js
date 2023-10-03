@@ -37,7 +37,7 @@ function checkEmail(string) {
     }
 }
 
-function isNumber(string) {
+function checkNumber(string) {
     return /^\d+$/.test(string);
 }
 
@@ -65,61 +65,43 @@ function uploadInfo(tab) {
     } else {
         tab.firstname = "";
         errors++;
-        let parent = document.getElementById("first").parentElement;
-        parent.setAttribute("data-error", "Veuillez entrer 2 caractères ou plus pour le champ du nom.");
-        parent.setAttribute("data-error-visible", true);
+        displayError("first", "Veuillez entrer 2 caractères ou plus pour le champ du nom.")
     }
-
     if (checkName(lastname)) {
         tab.lastname = lastname;
     } else {
         tab.lastname = "";
         errors++;
-        let parent = document.getElementById("last").parentElement;
-        parent.setAttribute("data-error", "Veuillez entrer 2 caractères ou plus pour le champ du nom.");
-        parent.setAttribute("data-error-visible", true);
+        displayError("last", "Veuillez entrer 2 caractères ou plus pour le champ du nom.")
     }
-
     if (checkEmail(email)) {
         tab.email = email;
     } else {
         tab.email = "";
         errors++;
-        let parent = document.getElementById("email").parentElement;
-        parent.setAttribute("data-error", "Veuillez entrer un Email valide.");
-        parent.setAttribute("data-error-visible", true);
+        displayError("email", "Veuillez entrer un Email valide.")
     }
-
     if (birthdate !== "") {
         tab.birthdate = birthdate;
     } else {
         tab.birthdate = "";
         errors++;
-        let parent = document.getElementById("birthdate").parentElement;
-        parent.setAttribute("data-error", "Vous devez entrer votre date de naissance.");
-        parent.setAttribute("data-error-visible", true);
+        displayError("birthdate", "Vous devez entrer votre date de naissance.")
     }
-
-    if (isNumber(quantity)) {
+    if (checkNumber(quantity)) {
         tab.quantity = quantity;
     } else {
         tab.quantity = "";
         errors++;
-        let parent = document.getElementById("quantity").parentElement;
-        parent.setAttribute("data-error", "Veuillez entrer un nombre entre 0 et 99.");
-        parent.setAttribute("data-error-visible", true);
+        displayError("quantity", "Veuillez entrer un nombre entre 0 et 99.")
     }
-
     if (location !== "") {
         tab.location = location;
     } else {
         tab.location = "";
         errors++;
-        let parent = document.getElementById("location1").parentElement;
-        parent.setAttribute("data-error", "Vous devez choisir une option.");
-        parent.setAttribute("data-error-visible", true);
+        displayError("location1", "Vous devez choisir une option.")
     }
-
     if (newsletter) {
         tab.newsletter = true;
     } else {
@@ -133,29 +115,22 @@ function validate() {
 
     if (errors === 0 && document.getElementById("checkbox1").checked) {
         formInfo = Object.assign(formInfo, tempFormInfo);
-        const modalBody = document.querySelector(".modal-body");
-        modalBody.style.opacity = "0";
-        modalBody.style["pointer-events"] = "none";
+        hide(".modal-body");
         promptMsg(document.querySelector(".content"), "Merci pour votre inscription");
+        document.reserve.reset();
+        removeError("formData")
+
         document.querySelector(".closeBtn").addEventListener("click", () => {
-            let promptMsgs = document.querySelectorAll(".prompt")
-            for (i = 0; i < promptMsgs.length; i++) {
-                promptMsgs[i].parentNode.removeChild(promptMsgs[i]);
-            };
-            let closeBtns = document.querySelectorAll(".closeBtn")
-            for (i = 0; i < closeBtns.length; i++) {
-                closeBtns[i].parentNode.removeChild(closeBtns[i]);
-            };
-            modalBody.style.opacity = "1";
-            modalBody.style["pointer-events"] = "auto";
+            deleteTempHtml(".prompt")
+            deleteTempHtml(".closeBtn")
+            show(".modal-body");
             document.querySelector(".bground").style.display = "none";
         })
         console.log(formInfo);
         console.log(tempFormInfo);
     } else {
         if (document.getElementById("checkbox1").checked === false) {
-            document.getElementById("checkbox1").parentNode.setAttribute("data-error", "Vous devez vérifier que vous acceptez les termes et conditions.");
-            document.getElementById("checkbox1").parentNode.setAttribute("data-error-visible", true);
+            displayError("checkbox1", "Vous devez vérifier que vous acceptez les termes et conditions.");
         }
         console.log(formInfo);
         console.log(tempFormInfo);
@@ -166,9 +141,9 @@ const form = document.querySelector("form");
 
 form.addEventListener("submit", (event) => {
     event.preventDefault();
-})
+});
 
-/* MSG Remerciement */
+/*Afficher MSG Remerciement */
 
 function promptMsg(div, string) {
     let promptDiv = document.createElement("div");
@@ -183,93 +158,47 @@ function promptMsg(div, string) {
     div.append(closeBtn);
 }
 
+/* Effacer les ajouts temporarires du HTML */
 
-/*
-function errorMsg (div,string) {
-    let errorDiv = document.createElement("span");
-    errorDiv.innerHTML = string;
-    errorDiv.classList.add("errorMsg");
-    div.insertAdjacentElement("afterend",errorDiv);
+function deleteTempHtml(temp) {
+    let divs = document.querySelectorAll(temp)
+    for (i = 0; i < divs.length; i++) {
+        divs[i].parentNode.removeChild(divs[i]);
+    };
 }
 
+/* Cacher un element */
 
+function hide(temp) {
+    let div = document.querySelector(temp);
+    div.style.opacity = "0";
+    div.style["pointer-events"] = "none";
+}
 
-function uploadInfo (tab) {
-    let errors = 0;
-    let errorMsgs = document.querySelectorAll(".errorMsg");
-    for (i=0 ; i<errorMsgs.length ; i++) {
-        errorMsgs[i].parentNode.removeChild(errorMsgs[i]);
-    };
-    let firstname = document.getElementById("first").value;
-    let lastname = document.getElementById("last").value;
-    let email = document.getElementById("email").value;
-    let birthdate = document.getElementById("birthdate").value;
-    let quantity = document.getElementById("quantity").value;
-    let locations = document.getElementsByName("location");
-    let location = ""
-    for (i=0 ; i<locations.length ; i++) {
-        if (locations[i].checked) {
-            location = locations[i].value;
-            break;
+/* Afficher un element */
+
+function show(temp) {
+    let div = document.querySelector(temp);
+    div.style.opacity = "1";
+    div.style["pointer-events"] = "auto";
+}
+
+/* Afficher Msg Erreur */
+
+function displayError(id, string) {
+    let parent = document.getElementById(id).parentElement;
+    parent.setAttribute("data-error", string);
+    parent.setAttribute("data-error-visible", true);
+}
+
+/* Effacer Msg Erreur */
+
+function removeError(className) {
+    let array = document.querySelectorAll("." + className);
+    for (i = 0; i < array.length; i++) {
+        if (array[i].hasAttribute("data-error-visible")) {
+            array[i].removeAttribute("data-error");
+            array[i].removeAttribute("data-error-visible");
         }
     }
-    newsletter = document.getElementById("checkbox2").checked;
-
-    if (checkName(firstname)) {
-        tab.firstname = firstname;
-    } else {
-        tab.firstname = "";        
-        errors++;
-        errorMsg (document.getElementById("first"),"Veuillez entrer 2 caractères ou plus pour le champ du nom.");
-    }
-
-    if (checkName(lastname)) {
-        tab.lastname = lastname;
-    } else {
-        tab.lastname = "";
-        errors++;
-        errorMsg (document.getElementById("last"),"Veuillez entrer 2 caractères ou plus pour le champ du nom.");
-    }
-
-    if (checkEmail(email)) {
-        tab.email = email;
-    } else {
-        tab.email = "";
-        errors++;
-        errorMsg (document.getElementById("email"),"Veuillez entrer un Email valide.");
-    }
-
-    if (birthdate !== "") {
-        tab.birthdate = birthdate;
-    } else {
-        tab.birthdate = "";
-        errors++;
-        errorMsg (document.getElementById("birthdate"),"Vous devez entrer votre date de naissance.");
-    }
-
-    if (isNumber(quantity)) {
-        tab.quantity = quantity;
-    } else {
-        tab.quantity = "";
-        errors++;
-        errorMsg (document.getElementById("quantity"),"Veuillez entrer un nombre entre 0 et 99.");
-    }
-
-    if (location !== "") {
-        tab.location = location;
-    } else {
-        tab.location = "";
-        errors++;
-        errorMsg (document.querySelector(".text-label"),"Vous devez choisir une option.");
-    }
-
-    if (newsletter) {
-        tab.newsletter = true;
-    } else {
-        tab.newsletter = false;
-    }
-    return errors;
 }
-
-
-*/

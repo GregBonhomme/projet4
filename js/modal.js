@@ -20,14 +20,29 @@ modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 // launch modal form
 function launchModal() {
     modalbg.style.display = "block";
+    document.querySelector(".topnav").setAttribute("modalOpened", true);
 }
 
 //close modal event
 closeBtn.addEventListener("click", () => {
+    document.reserve.reset();
+    removeError("formData")
     closeModal();
 });
 
 // close modal form
 function closeModal() {
     modalbg.style.display = "none";
+}
+
+// erase errorMsgs 
+
+function removeError(className) {
+    let array = document.querySelectorAll("." + className);
+    for (i = 0; i < array.length; i++) {
+        if (array[i].hasAttribute("data-error-visible")) {
+            array[i].removeAttribute("data-error");
+            array[i].removeAttribute("data-error-visible");
+        }
+    }
 }
