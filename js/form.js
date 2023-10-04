@@ -120,11 +120,13 @@ function validate() {
         document.reserve.reset();
         removeError("formData")
 
+        //Fermeture après validation du formulaire
         document.querySelector(".closeBtn").addEventListener("click", () => {
             deleteTempHtml(".prompt")
             deleteTempHtml(".closeBtn")
             show(".modal-body");
             document.querySelector(".bground").style.display = "none";
+            document.querySelector(".topnav").setAttribute("modalOpened", false);
         })
         console.log(formInfo);
         console.log(tempFormInfo);

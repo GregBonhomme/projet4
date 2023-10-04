@@ -32,6 +32,7 @@ closeBtn.addEventListener("click", () => {
 
 // close modal form
 function closeModal() {
+    document.querySelector(".topnav").setAttribute("modalOpened", false);
     modalbg.style.display = "none";
 }
 

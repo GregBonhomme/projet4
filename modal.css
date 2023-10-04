@@ -597,7 +597,7 @@ footer {
         margin-top: 0px;
     }
 
-    .topnav[modalOpened=true] {
+    .topnav[modalOpened="true"] {
         position: fixed;
     }
 
